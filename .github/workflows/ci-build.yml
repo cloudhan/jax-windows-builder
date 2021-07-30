@@ -1,0 +1,66 @@
+name: build whls
+
+on:
+  push:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build-cuda101:
+    runs-on: windows-2019
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Install CUDA 10.1
+        run: |
+          curl -k -L https://whls.blob.core.windows.net/ci-files/v10.1.7z -o cuda.7z
+          7z x cuda.7z -o'D:/CUDA'
+          rm cuda.7z
+          ls D:/CUDA/v10.1
+
+      - uses: actions/cache@v2
+        with:
+          path: ~\AppData\Local\pip\Cache
+          key: ${{ runner.os }}-pip-${{ hashFiles('build-requirements-*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      # Python 3.9
+      - name: py39
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+      - name: py39 pip install
+        run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements-py39.txt"
+      - name: build py39 whl
+        run: |
+          cd "$env:GITHUB_WORKSPACE/jax"
+          ../bazel-build-cuda.ps1 -cuda_version '10.1' -cuda_prefix 'D:/CUDA'
+
+      # Python 3.8
+      - name: py38
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+      - name: py38 pip install
+        run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements-py38.txt"
+      - name: build py38 whl
+        run: |
+          cd "$env:GITHUB_WORKSPACE/jax"
+          ../bazel-build-cuda.ps1 -cuda_version '10.1' -cuda_prefix 'D:/CUDA'
+
+      # Python 3.7
+      - name: py37
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.7"
+      - name: py37 pip install
+        run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements-py37.txt"
+      - name: build py37 whl
+        run: |
+          cd "$env:GITHUB_WORKSPACE/jax"
+          ../bazel-build-cuda.ps1 -cuda_version '10.1' -cuda_prefix 'D:/CUDA'
