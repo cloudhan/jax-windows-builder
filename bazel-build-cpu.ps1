@@ -1,16 +1,6 @@
 param(
     [Parameter(Mandatory = $true)]
-    [String]$bazel_path,
-
-    # [Parameter(Mandatory = $true)]
-    # [String]$conda_env,
-
-    [Parameter(Mandatory = $true)]
-    [ValidateSet('11.2', '10.1')]
-    [String]$cuda_version,
-
-    [Parameter(Mandatory = $false)]
-    [String]$cuda_prefix = "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA"
+    [String]$bazel_path
 )
 
 . (Join-Path (Split-Path $MyInvocation.MyCommand.Path) functions.ps1)
@@ -18,20 +8,6 @@ $ErrorActionPreference = "Stop"
 
 # path for patch.exe and realpath.exe
 $msys2_path = "C:\msys64\usr\bin"
-
-switch ($cuda_version) {
-    '11.2' {
-        $cuda_cap = '6.1,7.0,7.5,8.0,8.6'
-        $cudnn_version = '8.1.1'
-    }
-    '10.1' {
-        $cuda_cap = '6.1,7.0,7.5'
-        $cudnn_version = '7.6.5'
-    }
-}
-
-$cuda_path = "$cuda_prefix/v$cuda_version"
-$cudnn_path = $cuda_path
 
 [System.Collections.ArrayList]$new_path = `
     'C:\Windows\System32', `
@@ -43,16 +19,6 @@ Push-Environment
 Push-Location
 
 try {
-    # https://github.com/tensorflow/tensorflow/blob/9e2743271dd09609e8726edaffdd7c6762d3bf05/third_party/gpus/find_cuda_config.py#L26-L33
-    # and tf 2.0 release note
-    if ($cuda_path -eq $cudnn_path) {
-        # https://github.com/tensorflow/tensorflow/issues/51040
-        $env:TF_CUDA_PATHS="$cuda_path"
-    }
-    else {
-        $env:TF_CUDA_PATHS="$cuda_path,$cudnn_path"
-    }
-
     # insert your path here
     $new_path.Insert(0, 'C:\Program Files\Git\cmd')
     $new_path.Insert(0, 'C:\tools\bazelisk')
@@ -77,12 +43,7 @@ try {
     $env:BAZEL_VC = $env:VCINSTALLDIR
 
     python .\build\build.py `
-        --enable_cuda `
-        --cuda_version="$cuda_version" `
-        --cuda_path="$cuda_path" `
-        --cudnn_version="$cudnn_version" `
-        --cudnn_path="$cudnn_path" `
-        --cuda_compute_capabilities="$cuda_cap" `
+        --noenable_cuda `
         --bazel_path="$bazel_path" `
         --bazel_startup_options="--output_user_root=D:/bazel_output_root"
 
@@ -94,11 +55,9 @@ try {
         throw "number of whl files != 1"
     }
     $name = (ls dist)[0].Name
-    $cuda_tag = "cuda" + ($cuda_version -split "\." -join "")
-    $new_name = $name.Insert($name.IndexOf("-", $name.IndexOf("-") + 1), "+$cuda_tag")
 
-    mkdir "bazel-dist/$cuda_tag" -ErrorAction 0
-    mv -Force "dist/$name" "bazel-dist/$cuda_tag/$new_name"
+    mkdir "bazel-dist/cpu" -ErrorAction 0
+    mv -Force "dist/$name" "bazel-dist/cpu/$name"
 }
 finally {
     Pop-Location
