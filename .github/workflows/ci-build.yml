@@ -157,7 +157,7 @@ jobs:
         az storage blob upload-batch -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
-  build-cuda112:
+  build-cuda111:
     runs-on: windows-2019
     env:
       AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
@@ -173,12 +173,12 @@ jobs:
     - name: Download Bazelisk
       run: curl -k -L https://github.com/bazelbuild/bazelisk/releases/download/v1.10.1/bazelisk-windows-amd64.exe -o $env:BAZEL_PATH
 
-    - name: Install CUDA 11.2
+    - name: Install CUDA 11.1
       run: |
-        curl -k -L https://whls.blob.core.windows.net/ci-files/v11.2.7z -o cuda.7z
+        curl -k -L https://whls.blob.core.windows.net/ci-files/v11.1.7z -o cuda.7z
         7z x cuda.7z -o'D:/CUDA'
         rm cuda.7z
-        ls D:/CUDA/v11.2
+        ls D:/CUDA/v11.1
 
     - uses: actions/cache@v2
       with:
@@ -199,7 +199,7 @@ jobs:
     - name: py39 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
-        ../bazel-build-cuda.ps1 -bazel_path $env:BAZEL_PATH -cuda_version '11.2' -cuda_prefix 'D:/CUDA'
+        ../bazel-build-cuda.ps1 -bazel_path $env:BAZEL_PATH -cuda_version '11.1' -cuda_prefix 'D:/CUDA'
         az storage blob upload-batch -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
@@ -215,7 +215,7 @@ jobs:
     - name: py38 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
-        ../bazel-build-cuda.ps1 -bazel_path $env:BAZEL_PATH -cuda_version '11.2' -cuda_prefix 'D:/CUDA'
+        ../bazel-build-cuda.ps1 -bazel_path $env:BAZEL_PATH -cuda_version '11.1' -cuda_prefix 'D:/CUDA'
         az storage blob upload-batch -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
@@ -231,6 +231,23 @@ jobs:
     - name: py37 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
-        ../bazel-build-cuda.ps1 -bazel_path $env:BAZEL_PATH -cuda_version '11.2' -cuda_prefix 'D:/CUDA'
+        ../bazel-build-cuda.ps1 -bazel_path $env:BAZEL_PATH -cuda_version '11.1' -cuda_prefix 'D:/CUDA'
         az storage blob upload-batch -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
+
+  update-index:
+    if: always()
+    needs: [build-cpu, build-cuda101, build-cuda111]
+    runs-on: windows-2019
+    env:
+      AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+    steps:
+    - name: py39
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.9"
+    - name: update index.html
+      run: |
+        cd "$env:GITHUB_WORKSPACE/"
+        python ./update_index.py --url_mode relative unstable > index.html
+        az storage blob upload -c unstable -f index.html -n index.html
