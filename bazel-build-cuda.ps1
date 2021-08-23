@@ -57,6 +57,9 @@ try {
         $env:TF_CUDA_PATHS="$cuda_path,$cudnn_path"
     }
 
+    # https://github.com/tensorflow/tensorflow/blob/master/third_party/gpus/cuda_configure.bzl
+    $env:TF_CUDA_COMPUTE_CAPABILITIES = $cuda_cap
+
     # insert your path here
     $new_path.Insert(0, 'C:\Program Files\Git\cmd')
     $new_path.Insert(0, 'C:\tools\bazelisk')
@@ -86,7 +89,6 @@ try {
         --cuda_path="$cuda_path" `
         --cudnn_version="$cudnn_version" `
         --cudnn_path="$cudnn_path" `
-        --cuda_compute_capabilities="$cuda_cap" `
         --bazel_path="$bazel_path" `
         --bazel_startup_options="--output_user_root=D:/bazel_output_root"
 
