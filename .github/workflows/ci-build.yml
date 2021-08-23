@@ -242,6 +242,7 @@ jobs:
     env:
       AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
     steps:
+    - uses: actions/checkout@v2
     - name: py39
       uses: actions/setup-python@v2
       with:
