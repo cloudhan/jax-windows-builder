@@ -2,12 +2,11 @@
 
 alpha state...
 
-A community supported Windows build for jax. Currently, only CPU, CUDA 10.1 and
-CUDA 11.1 are supported. For CUDA 11.x, install the `cuda111` package.
+A community supported Windows build for jax.
 
-There will be no support for CUDA 10.2 and CUDA 11.0, and will not be added in
-foreseeable future.
+Currently, only CPU and CUDA 11.1 are supported. For CUDA 11.x, please install the `cuda111` package.
 
+There will be no support for CUDA 10.x (due to incomplete cuSPARSE support on Windows) and CUDA 11.0, and will not be added in foreseeable future.
 
 # Unstable builds
 
@@ -61,7 +60,7 @@ disk limit and 2 cores, each job is limited to 6 hour running.
 
 The disk limit is the only limitation here for jax.
 
-The `v10.1.7z` is cuda toolkit 10.1 combined with cudnn 7.6.5. The `v11.1.7z`
+~~The `v10.1.7z` is cuda toolkit 10.1 combined with cudnn 7.6.5.~~ The `v11.1.7z`
 is cuda toolkit 11.1 combined with cudnn 8.2.2. The full package is too big to
 fit into the ci machine (since there will be pip installation and build
 artificts). Removing the DLLs and irrelevant files reduced the total package of
