@@ -13,10 +13,12 @@ jobs:
     env:
       AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
       BAZEL_PATH: "D:\\bazel.exe"
-      TEMP: 'D:\\Temp'
-      TMP: 'D:\\Temp'
+      TEMP: C:\\Users\\runneradmin\\Temp
+      TMP: C:\\Users\\runneradmin\\Temp
       PYTHONUNBUFFERED: '1'
     steps:
+    - name: Probe user home
+      run: ls ~
     - uses: actions/checkout@v2
       with:
         submodules: true
@@ -85,8 +87,8 @@ jobs:
     env:
       AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
       BAZEL_PATH: "D:\\bazel.exe"
-      TEMP: 'D:\\Temp'
-      TMP: 'D:\\Temp'
+      TEMP: C:\\Users\\runneradmin\\Temp
+      TMP: C:\\Users\\runneradmin\\Temp
       PYTHONUNBUFFERED: '1'
     steps:
     - uses: actions/checkout@v2
@@ -163,8 +165,8 @@ jobs:
     env:
       AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
       BAZEL_PATH: "D:\\bazel.exe"
-      TEMP: 'D:\\Temp'
-      TMP: 'D:\\Temp'
+      TEMP: C:\\Users\\runneradmin\\Temp
+      TMP: C:\\Users\\runneradmin\\Temp
       PYTHONUNBUFFERED: '1'
     steps:
     - uses: actions/checkout@v2
