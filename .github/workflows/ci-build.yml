@@ -42,7 +42,7 @@ jobs:
     - uses: actions/cache@v2
       with:
         path: ~\AppData\Local\pip\Cache
-        key: ${{ runner.os }}-pip-${{ hashFiles('build-requirements-*.txt') }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('build-requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
 
@@ -54,7 +54,7 @@ jobs:
       with:
         python-version: "3.9"
     - name: py39 pip install
-      run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements-py39.txt"
+      run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements.txt"
     - name: py39 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
@@ -70,7 +70,7 @@ jobs:
       with:
         python-version: "3.8"
     - name: py38 pip install
-      run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements-py38.txt"
+      run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements.txt"
     - name: py38 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
@@ -86,7 +86,7 @@ jobs:
       with:
         python-version: "3.7"
     - name: py37 pip install
-      run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements-py37.txt"
+      run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements.txt"
     - name: py37 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
@@ -135,7 +135,7 @@ jobs:
     - uses: actions/cache@v2
       with:
         path: ~\AppData\Local\pip\Cache
-        key: ${{ runner.os }}-pip-${{ hashFiles('build-requirements-*.txt') }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('build-requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
 
@@ -147,7 +147,7 @@ jobs:
       with:
         python-version: "3.9"
     - name: py39 pip install
-      run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements-py39.txt"
+      run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements.txt"
     - name: py39 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
@@ -163,7 +163,7 @@ jobs:
       with:
         python-version: "3.8"
     - name: py38 pip install
-      run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements-py38.txt"
+      run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements.txt"
     - name: py38 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
@@ -179,7 +179,7 @@ jobs:
       with:
         python-version: "3.7"
     - name: py37 pip install
-      run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements-py37.txt"
+      run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements.txt"
     - name: py37 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"

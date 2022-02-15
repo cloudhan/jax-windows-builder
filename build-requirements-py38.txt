@@ -1,6 +1,0 @@
-numpy==1.18.5
-scipy==1.5.4
-setuptools
-wheel
-six
-auditwheel
