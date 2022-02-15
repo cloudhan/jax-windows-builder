@@ -17,8 +17,21 @@ jobs:
       TMP: C:\\Users\\runneradmin\\Temp
       PYTHONUNBUFFERED: '1'
     steps:
-    - name: Probe user home
+    - name: Show user home
       run: ls ~
+    - name: Show cpu info
+      run: Get-CimInstance Win32_Processor
+    - name: Show memory info
+      run: Get-CimInstance Win32_PhysicalMemory | Format-Table Tag, DeviceLocator, Capacity, Speed
+    - name: Configure pagefile
+      uses: al-cheb/configure-pagefile-action@v1.2
+      with:
+        minimum-size: 8GB
+        maximum-size: 32GB
+        disk-root: "C:"
+    - name: Show disk info
+      run: Get-Volume -DriveLetter CD | Sort-Object DriveLetter
+
     - uses: actions/checkout@v2
       with:
         submodules: true
@@ -90,6 +103,21 @@ jobs:
       TMP: C:\\Users\\runneradmin\\Temp
       PYTHONUNBUFFERED: '1'
     steps:
+    - name: Show user home
+      run: ls ~
+    - name: Show cpu info
+      run: Get-CimInstance Win32_Processor
+    - name: Show memory info
+      run: Get-CimInstance Win32_PhysicalMemory | Format-Table Tag, DeviceLocator, Capacity, Speed
+    - name: Configure pagefile
+      uses: al-cheb/configure-pagefile-action@v1.2
+      with:
+        minimum-size: 8GB
+        maximum-size: 32GB
+        disk-root: "C:"
+    - name: Show disk info
+      run: Get-Volume -DriveLetter CD | Sort-Object DriveLetter
+
     - uses: actions/checkout@v2
       with:
         submodules: true
