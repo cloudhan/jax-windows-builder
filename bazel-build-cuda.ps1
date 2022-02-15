@@ -83,6 +83,9 @@ try {
     # vcpath, workaround it.
     $env:BAZEL_VC = $env:VCINSTALLDIR
 
+    git checkout .bazelrc
+    echo 'try-import %workspace%/../windows_configure.bazelrc' >> .bazelrc
+
     python .\build\build.py `
         --enable_cuda `
         --cuda_version="$cuda_version" `
