@@ -86,6 +86,9 @@ try {
     git checkout .bazelrc
     echo 'try-import %workspace%/../windows_configure.bazelrc' >> .bazelrc
 
+    mkdir ~/bzl_out -ErrorAction 0
+    New-Item -Type Junction -Target ~/bzl_out -Path D:/bzl_out -ErrorAction 0
+
     python .\build\build.py `
         --enable_cuda `
         --cuda_version="$cuda_version" `
@@ -93,7 +96,7 @@ try {
         --cudnn_version="$cudnn_version" `
         --cudnn_path="$cudnn_path" `
         --bazel_path="$bazel_path" `
-        --bazel_startup_options="--output_user_root=D:/bazel_output_root"
+        --bazel_startup_options="--output_user_root=D:/bzl_out"
 
     if ($LASTEXITCODE -ne 0) {
         throw "last command exit with $LASTEXITCODE"
