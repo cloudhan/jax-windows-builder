@@ -47,6 +47,22 @@ jobs:
           ${{ runner.os }}-pip-
 
     #============#
+    # Python 3.10 #
+    #============#
+    - name: py310
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.10"
+    - name: py310 pip install
+      run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements-py310.txt"
+    - name: py310 build whl and upload
+      run: |
+        cd "$env:GITHUB_WORKSPACE/jax"
+        ../bazel-build-cpu.ps1 -bazel_path $env:BAZEL_PATH
+        az storage blob upload-batch -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
+        rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
+
+    #============#
     # Python 3.9 #
     #============#
     - name: py39
@@ -142,6 +158,22 @@ jobs:
         key: ${{ runner.os }}-pip-${{ hashFiles('build-requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
+
+    #=============#
+    # Python 3.10 #
+    #=============#
+    - name: py310
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.10"
+    - name: py310 pip install
+      run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements-py310.txt"
+    - name: py310 build whl and upload
+      run: |
+        cd "$env:GITHUB_WORKSPACE/jax"
+        ../bazel-build-cuda.ps1 -bazel_path $env:BAZEL_PATH -cuda_version '11.1' -cuda_prefix 'D:/CUDA'
+        az storage blob upload-batch -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
+        rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
     #============#
     # Python 3.9 #
