@@ -107,6 +107,10 @@ jobs:
       run: ls ~
     - name: Show cpu info
       run: Get-CimInstance Win32_Processor
+    - name: Limit cpu
+      run: |
+        $p = Get-CimInstance Win32_Processor
+        if ($p.Name -match "E5-") { throw "CPU is too old!" }
     - name: Show memory info
       run: Get-CimInstance Win32_PhysicalMemory | Format-Table Tag, DeviceLocator, Capacity, Speed
     - name: Configure pagefile
