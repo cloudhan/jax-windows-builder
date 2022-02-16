@@ -192,7 +192,7 @@ jobs:
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
   update-index:
-    if: always()
+    if: ${{ ! cancelled() }}
     needs: [build-cpu, build-cuda111]
     runs-on: windows-2019
     env:
