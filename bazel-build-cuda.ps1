@@ -87,7 +87,7 @@ try {
     echo 'try-import %workspace%/../windows_configure.bazelrc' >> .bazelrc
 
     mkdir ~/bzl_out -ErrorAction 0
-    New-Item -Type Junction -Target ~/bzl_out -Path D:/bzl_out -ErrorAction 0
+    New-Item -Type Junction -Target (Resolve-Path ~/bzl_out) -Path D:/bzl_out
 
     python .\build\build.py `
         --enable_cuda `
