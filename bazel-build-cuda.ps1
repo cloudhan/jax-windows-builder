@@ -86,8 +86,8 @@ try {
     git checkout .bazelrc
     echo 'try-import %workspace%/../windows_configure.bazelrc' >> .bazelrc
 
-    mkdir ~/bzl_out -ErrorAction 0
-    New-Item -Type Junction -Target (Resolve-Path ~/bzl_out) -Path D:/bzl_out
+    mkdir ~/bzl_out -ErrorAction Continue
+    New-Item -Type Junction -Target (Resolve-Path ~/bzl_out) -Path D:/bzl_out -ErrorAction Continue
 
     python .\build\build.py `
         --enable_cuda `
