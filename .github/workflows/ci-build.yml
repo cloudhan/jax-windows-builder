@@ -239,4 +239,4 @@ jobs:
       run: |
         cd "$env:GITHUB_WORKSPACE/"
         python ./update_index.py --url_mode relative unstable > index.html
-        az storage blob upload -c unstable -f index.html -n index.html
+        az storage blob upload --overwrite -c unstable -f index.html -n index.html
