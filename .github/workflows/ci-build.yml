@@ -238,7 +238,6 @@ jobs:
     - name: update index.html
       run: |
         cd "$env:GITHUB_WORKSPACE/"
-        python ./update_index.py --url_mode relative unstable > index.html
-        az storage blob upload --overwrite -c unstable -f index.html -n index.html --content-type='text/html'
         python ./update_index.py --url_mode absolute unstable > index.html
+        az storage blob upload --overwrite -c unstable -f index.html -n index.html --content-type='text/html'
         az storage blob upload --overwrite -c '$web' -f index.html -n 'unstable/index.html' --content-type='text/html'
