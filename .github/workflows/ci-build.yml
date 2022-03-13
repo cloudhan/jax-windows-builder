@@ -59,7 +59,7 @@ jobs:
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
         ../bazel-build-cpu.ps1 -bazel_path $env:BAZEL_PATH
-        az storage blob upload-batch -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
+        az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
     #============#
@@ -75,7 +75,7 @@ jobs:
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
         ../bazel-build-cpu.ps1 -bazel_path $env:BAZEL_PATH
-        az storage blob upload-batch -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
+        az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
     #============#
@@ -91,7 +91,7 @@ jobs:
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
         ../bazel-build-cpu.ps1 -bazel_path $env:BAZEL_PATH
-        az storage blob upload-batch -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
+        az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
     #============#
@@ -107,7 +107,7 @@ jobs:
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
         ../bazel-build-cpu.ps1 -bazel_path $env:BAZEL_PATH
-        az storage blob upload-batch -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
+        az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
   build-cuda111:
@@ -172,7 +172,7 @@ jobs:
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
         ../bazel-build-cuda.ps1 -bazel_path $env:BAZEL_PATH -cuda_version '11.1' -cuda_prefix 'D:/CUDA'
-        az storage blob upload-batch -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
+        az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
     #============#
@@ -188,7 +188,7 @@ jobs:
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
         ../bazel-build-cuda.ps1 -bazel_path $env:BAZEL_PATH -cuda_version '11.1' -cuda_prefix 'D:/CUDA'
-        az storage blob upload-batch -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
+        az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
     #============#
@@ -204,7 +204,7 @@ jobs:
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
         ../bazel-build-cuda.ps1 -bazel_path $env:BAZEL_PATH -cuda_version '11.1' -cuda_prefix 'D:/CUDA'
-        az storage blob upload-batch -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
+        az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
     #============#
@@ -220,7 +220,7 @@ jobs:
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
         ../bazel-build-cuda.ps1 -bazel_path $env:BAZEL_PATH -cuda_version '11.1' -cuda_prefix 'D:/CUDA'
-        az storage blob upload-batch -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
+        az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
   update-index:
@@ -239,4 +239,6 @@ jobs:
       run: |
         cd "$env:GITHUB_WORKSPACE/"
         python ./update_index.py --url_mode relative unstable > index.html
-        az storage blob upload --overwrite -c unstable -f index.html -n index.html
+        az storage blob upload --overwrite -c unstable -f index.html -n index.html --content-type='text/html'
+        python ./update_index.py --url_mode absolute unstable > index.html
+        az storage blob upload --overwrite -c '$web' -f index.html -n 'unstable/index.html' --content-type='text/html'
