@@ -7,7 +7,7 @@ param(
 
     [Parameter(Mandatory = $true)]
     [ValidateSet('11.2', '11.1', '10.1')]
-    [String]$cuda_version,
+    $cuda_version,
 
     [Parameter(Mandatory = $false)]
     [String]$cuda_prefix = "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA"
@@ -33,6 +33,9 @@ switch ($cuda_version) {
         $cudnn_version = '7.6.5'
     }
 }
+
+$cuda_version = [System.Version]$cuda_version
+$cudnn_version = [System.Version]$cudnn_version
 
 $cuda_path = "$cuda_prefix/v$cuda_version"
 $cudnn_path = $cuda_path
@@ -106,11 +109,12 @@ try {
         throw "number of whl files != 1"
     }
     $name = (ls dist)[0].Name
-    $cuda_tag = "cuda" + ($cuda_version -split "\." -join "")
-    $new_name = $name.Insert($name.IndexOf("-", $name.IndexOf("-") + 1), "+$cuda_tag")
+    $cuda_dir = "cuda$($cuda_version.Major)$($cuda_version.Minor)"
+    $cuda_cudnn_tag = "cuda$($cuda_version.Major).cudnn$($cudnn_version.Major)$($cudnn_version.Minor)"
+    $new_name = $name.Insert($name.IndexOf("-", $name.IndexOf("-") + 1), "+$cuda_cudnn_tag")
 
-    mkdir "bazel-dist/$cuda_tag" -ErrorAction 0
-    mv -Force "dist/$name" "bazel-dist/$cuda_tag/$new_name"
+    mkdir "bazel-dist/$cuda_dir" -ErrorAction 0
+    mv -Force "dist/$name" "bazel-dist/$cuda_dir/$new_name"
 }
 finally {
     Pop-Location
