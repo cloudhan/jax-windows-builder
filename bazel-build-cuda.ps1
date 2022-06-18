@@ -21,16 +21,10 @@ $msys2_path = "C:\msys64\usr\bin"
 
 switch ($cuda_version) {
     '11.2' {
-        $cuda_cap = '6.1,7.0,7.5,8.0,8.6'
         $cudnn_version = '8.2.2'
     }
     '11.1' {
-        $cuda_cap = '6.1,7.0,7.5,8.0,8.6'
         $cudnn_version = '8.2.2'
-    }
-    '10.1' {
-        $cuda_cap = '6.1,7.0,7.5'
-        $cudnn_version = '7.6.5'
     }
 }
 
@@ -59,9 +53,6 @@ try {
     else {
         $env:TF_CUDA_PATHS="$cuda_path,$cudnn_path"
     }
-
-    # https://github.com/tensorflow/tensorflow/blob/master/third_party/gpus/cuda_configure.bzl
-    $env:TF_CUDA_COMPUTE_CAPABILITIES = $cuda_cap
 
     # insert your path here
     $new_path.Insert(0, 'C:\Program Files\Git\cmd')
