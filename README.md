@@ -8,33 +8,33 @@ Currently, only CPU and CUDA 11.1 are supported. For CUDA 11.x, please install t
 
 # Unstable builds
 
-`jax` pinned a `jaxlib` package version in its `setup.py`, to install unstable
+Each`jax` build pinnes a concrete `jaxlib` package version in its `setup.py`. To install an unstable
 build, you must first ensure the required `jaxlib` package exists in the pacakge
 index. Check it out at https://whls.blob.core.windows.net/unstable/index.html
 
-## Install CPU only version
+You can either install `jax` via pip (CPU only or CUDA), install `jax` from source or download the desired wheel manually.
 
-```powershell
-# See https://peps.python.org/pep-0440/#arbitrary-equality for triple `=`
-pip install jaxlib===0.3.5 -f https://whls.blob.core.windows.net/unstable/index.html
+## Install CPU only version via `pip`
+
+```
+pip install "jax[cpu]===0.3.14" -f https://whls.blob.core.windows.net/unstable/index.html --use-deprecated legacy-resolver
 ```
 
-## Use pip
+## Install `cuda111` version via `pip`
 
 ```
 pip install jax[cuda111] -f https://whls.blob.core.windows.net/unstable/index.html --use-deprecated legacy-resolver
 ```
 
-## Install from jax source
+## Install from `jax` source
 
 ```
 pip install -e .[cuda111] -f https://whls.blob.core.windows.net/unstable/index.html --use-deprecated legacy-resolver
 ```
 
-## The ultimate solution
+## The manual solution
 
-You just manually select a version of `jaxlib` that you want to install. And
-then install `jax` manually.
+Select a version of `jaxlib` that you want to install. Then install `jax` manually.
 
 ```powershell
 # download jaxlib from https://whls.blob.core.windows.net/unstable/index.html
