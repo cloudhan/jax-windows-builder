@@ -18,7 +18,7 @@ function Set-EnvFromCmdSet {
 function Set-VSEnv {
     param (
         [parameter(Mandatory = $false)]
-        [ValidateSet(2017, 2019)]
+        [ValidateSet(2022, 2019, 2017)]
         [int]$Version = 2019,
 
         [parameter(Mandatory = $false)]
@@ -28,25 +28,18 @@ function Set-VSEnv {
 
     $vs_where = 'C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe'
 
-    $vs_env = @{ }
-
-    if ($Version -eq 2019) {
-        $vs_env = @{
-            install_path = (&$vs_where -version '[16,17)'  -format json | ConvertFrom-Json)[0].installationPath
-            all          = 'Common7\Tools\VsDevCmd.bat'
-            x64          = 'VC\Auxiliary\Build\vcvars64.bat'
-            x86          = 'VC\Auxiliary\Build\vcvars32.bat'
-        }
+    $version_range = switch ($Version) {
+        2022 { '[17,18)' }
+        2019 { '[16,17)' }
+        2017 { '[15,16)' }
     }
-    else {
-        $vs_env = @{
-            install_path = (&$vs_where -version '[15,16)'  -format json | ConvertFrom-Json)[0].installationPath
-            all          = 'Common7\Tools\VsDevCmd.bat'
-            x64          = 'VC\Auxiliary\Build\vcvars64.bat'
-            x86          = 'VC\Auxiliary\Build\vcvars32.bat'
-        }
+    $info = &$vs_where -version $version_range -format json | ConvertFrom-Json
+    $vs_env = @{
+        install_path = if ($null -ne $info) { $info[0].installationPath } else { $null }
+        all          = 'Common7\Tools\VsDevCmd.bat'
+        x64          = 'VC\Auxiliary\Build\vcvars64.bat'
+        x86          = 'VC\Auxiliary\Build\vcvars32.bat'
     }
-
     if ( $null -eq $vs_env.install_path) {
         Write-Host -ForegroundColor Red "Visual Studio $Version is not installed."
         return
@@ -55,6 +48,7 @@ function Set-VSEnv {
     $path = Join-Path $vs_env.install_path $vs_env.$Arch
 
     C:/Windows/System32/cmd.exe /c "`"$path`" & set" | Set-EnvFromCmdSet
+    Set-Item -Force -Path "Env:\BAZEL_VC" -Value "$env:VCINSTALLDIR"
     Write-Host -ForegroundColor Green "Visual Studio $Version $Arch Command Prompt variables set."
 }
 
