@@ -1,6 +1,8 @@
+# https://github.com/pypa/setuptools/pull/3690
+setuptools>=65.6.1
+
 numpy==1.21.5
 scipy==1.7.3
-setuptools
 wheel
 six
 auditwheel
