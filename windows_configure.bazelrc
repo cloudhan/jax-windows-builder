@@ -4,3 +4,6 @@ build:windows --copt=/d2ReducedOptimizeHugeFunctions
 build:windows --host_copt=/d2ReducedOptimizeHugeFunctions
 
 # build:windows --@org_tensorflow//tensorflow/compiler/xla/python:enable_tpu=false
+
+build:windows --copt=/arch:AVX
+build:windows --copt=/arch:AVX2
