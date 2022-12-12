@@ -73,12 +73,7 @@ try {
     # maybe VS's python
     # conda activate $conda_env
 
-    # auto-detection is causing M$ banner/header/logo being included in the the
-    # vcpath, workaround it.
-    $env:BAZEL_VC = $env:VCINSTALLDIR
-
-    git checkout .bazelrc
-    echo 'try-import %workspace%/../windows_configure.bazelrc' >> .bazelrc
+    echo 'try-import %workspace%/../windows_configure.bazelrc' > .bazelrc.user
 
     mkdir ~/bzl_out -ErrorAction Continue
     New-Item -Type Junction -Target (Resolve-Path ~/bzl_out) -Path D:/bzl_out -ErrorAction Continue
