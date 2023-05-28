@@ -37,7 +37,7 @@ jobs:
         submodules: true
 
     - name: Download Bazelisk
-      run: curl -k -L https://github.com/bazelbuild/bazelisk/releases/download/v1.10.1/bazelisk-windows-amd64.exe -o $env:BAZEL_PATH
+      run: curl -k -L https://github.com/bazelbuild/bazelisk/releases/download/v1.17.0/bazelisk-windows-amd64.exe -o $env:BAZEL_PATH
 
     - uses: actions/cache@v2
       with:
@@ -46,15 +46,31 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
 
-    #============#
+    #=============#
+    # Python 3.11 #
+    #=============#
+    - name: py311
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.11"
+    - name: py311 pip install
+      run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements.txt"
+    - name: py311 build whl and upload
+      run: |
+        cd "$env:GITHUB_WORKSPACE/jax"
+        ../bazel-build-cpu.ps1 -bazel_path $env:BAZEL_PATH
+        az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
+        rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
+
+    #=============#
     # Python 3.10 #
-    #============#
+    #=============#
     - name: py310
       uses: actions/setup-python@v2
       with:
         python-version: "3.10"
     - name: py310 pip install
-      run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements-py310.txt"
+      run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements.txt"
     - name: py310 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
@@ -94,23 +110,8 @@ jobs:
         az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
-    #============#
-    # Python 3.7 #
-    #============#
-    - name: py37
-      uses: actions/setup-python@v2
-      with:
-        python-version: "3.7"
-    - name: py37 pip install
-      run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements.txt"
-    - name: py37 build whl and upload
-      run: |
-        cd "$env:GITHUB_WORKSPACE/jax"
-        ../bazel-build-cpu.ps1 -bazel_path $env:BAZEL_PATH
-        az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
-        rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
-
   build-cuda111:
+    if: ${{ false }}  # disable for now
     runs-on: windows-2019
     env:
       AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
@@ -143,7 +144,7 @@ jobs:
         submodules: true
 
     - name: Download Bazelisk
-      run: curl -k -L https://github.com/bazelbuild/bazelisk/releases/download/v1.10.1/bazelisk-windows-amd64.exe -o $env:BAZEL_PATH
+      run: curl -k -L https://github.com/bazelbuild/bazelisk/releases/download/v1.17.0/bazelisk-windows-amd64.exe -o $env:BAZEL_PATH
 
     - name: Install CUDA 11.1
       run: |
@@ -160,6 +161,22 @@ jobs:
           ${{ runner.os }}-pip-
 
     #=============#
+    # Python 3.11 #
+    #=============#
+    - name: py311
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.11"
+    - name: py311 pip install
+      run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements.txt"
+    - name: py311 build whl and upload
+      run: |
+        cd "$env:GITHUB_WORKSPACE/jax"
+        ../bazel-build-cuda.ps1 -bazel_path $env:BAZEL_PATH -cuda_version '11.1' -cuda_prefix 'D:/CUDA'
+        az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
+        rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
+
+    #=============#
     # Python 3.10 #
     #=============#
     - name: py310
@@ -167,7 +184,7 @@ jobs:
       with:
         python-version: "3.10"
     - name: py310 pip install
-      run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements-py310.txt"
+      run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements.txt"
     - name: py310 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
@@ -207,34 +224,20 @@ jobs:
         az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
-    #============#
-    # Python 3.7 #
-    #============#
-    - name: py37
-      uses: actions/setup-python@v2
-      with:
-        python-version: "3.7"
-    - name: py37 pip install
-      run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements.txt"
-    - name: py37 build whl and upload
-      run: |
-        cd "$env:GITHUB_WORKSPACE/jax"
-        ../bazel-build-cuda.ps1 -bazel_path $env:BAZEL_PATH -cuda_version '11.1' -cuda_prefix 'D:/CUDA'
-        az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
-        rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
-
   update-index:
     if: ${{ ! cancelled() }}
-    needs: [build-cpu, build-cuda111]
+    needs:
+      - build-cpu
+      # - build-cuda111
     runs-on: windows-2019
     env:
       AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
     steps:
     - uses: actions/checkout@v2
-    - name: py39
+    - name: py311
       uses: actions/setup-python@v2
       with:
-        python-version: "3.9"
+        python-version: "3.11"
     - name: update index.html
       run: |
         cd "$env:GITHUB_WORKSPACE/"
