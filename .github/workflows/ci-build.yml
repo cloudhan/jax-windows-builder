@@ -58,7 +58,7 @@ jobs:
     - name: py311 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
-        ../bazel-build-cpu.ps1 -bazel_path $env:BAZEL_PATH
+        ../build-jaxlib.ps1 cpu -bazel_path $env:BAZEL_PATH
         az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
@@ -74,7 +74,7 @@ jobs:
     - name: py310 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
-        ../bazel-build-cpu.ps1 -bazel_path $env:BAZEL_PATH
+        ../build-jaxlib.ps1 cpu -bazel_path $env:BAZEL_PATH
         az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
@@ -90,7 +90,7 @@ jobs:
     - name: py39 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
-        ../bazel-build-cpu.ps1 -bazel_path $env:BAZEL_PATH
+        ../build-jaxlib.ps1 cpu -bazel_path $env:BAZEL_PATH
         az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
@@ -106,12 +106,14 @@ jobs:
     - name: py38 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
-        ../bazel-build-cpu.ps1 -bazel_path $env:BAZEL_PATH
+        ../build-jaxlib.ps1 cpu -bazel_path $env:BAZEL_PATH
         az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
-  build-cuda111:
-    if: ${{ false }}  # disable for now
+  build-cuda:
+    strategy:
+      matrix:
+        cuda-version: ["11.8", "12.1"]
     runs-on: windows-2019
     env:
       AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
@@ -119,6 +121,7 @@ jobs:
       TEMP: C:\\Users\\runneradmin\\Temp
       TMP: C:\\Users\\runneradmin\\Temp
       PYTHONUNBUFFERED: '1'
+
     steps:
     - name: Show user home
       run: ls ~
@@ -146,12 +149,12 @@ jobs:
     - name: Download Bazelisk
       run: curl -k -L https://github.com/bazelbuild/bazelisk/releases/download/v1.17.0/bazelisk-windows-amd64.exe -o $env:BAZEL_PATH
 
-    - name: Install CUDA 11.1
+    - name: Install CUDA ${{ matrix.cuda-version }}
       run: |
-        curl -k -L https://whls.blob.core.windows.net/ci-files/v11.1.7z -o cuda.7z
+        curl -k -L https://whls.blob.core.windows.net/ci-files/v${{ matrix.cuda-version }}.7z -o cuda.7z
         7z x cuda.7z -o'D:/CUDA'
         rm cuda.7z
-        ls D:/CUDA/v11.1
+        ls D:/CUDA/v${{ matrix.cuda-version }}
 
     - uses: actions/cache@v2
       with:
@@ -172,7 +175,7 @@ jobs:
     - name: py311 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
-        ../bazel-build-cuda.ps1 -bazel_path $env:BAZEL_PATH -cuda_version '11.1' -cuda_prefix 'D:/CUDA'
+        ../build-jaxlib.ps1 cuda -bazel_path $env:BAZEL_PATH -cuda_version '${{ matrix.cuda-version }}' -cuda_prefix 'D:/CUDA'
         az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
@@ -188,7 +191,7 @@ jobs:
     - name: py310 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
-        ../bazel-build-cuda.ps1 -bazel_path $env:BAZEL_PATH -cuda_version '11.1' -cuda_prefix 'D:/CUDA'
+        ../build-jaxlib.ps1 cuda -bazel_path $env:BAZEL_PATH -cuda_version '${{ matrix.cuda-version }}' -cuda_prefix 'D:/CUDA'
         az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
@@ -204,7 +207,7 @@ jobs:
     - name: py39 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
-        ../bazel-build-cuda.ps1 -bazel_path $env:BAZEL_PATH -cuda_version '11.1' -cuda_prefix 'D:/CUDA'
+        ../build-jaxlib.ps1 cuda -bazel_path $env:BAZEL_PATH -cuda_version '${{ matrix.cuda-version }}' -cuda_prefix 'D:/CUDA'
         az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
@@ -220,7 +223,7 @@ jobs:
     - name: py38 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
-        ../bazel-build-cuda.ps1 -bazel_path $env:BAZEL_PATH -cuda_version '11.1' -cuda_prefix 'D:/CUDA'
+        ../build-jaxlib.ps1 cuda -bazel_path $env:BAZEL_PATH -cuda_version '${{ matrix.cuda-version }}' -cuda_prefix 'D:/CUDA'
         az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
@@ -228,7 +231,7 @@ jobs:
     if: ${{ ! cancelled() }}
     needs:
       - build-cpu
-      # - build-cuda111
+      - build-cuda
     runs-on: windows-2019
     env:
       AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
