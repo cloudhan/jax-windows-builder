@@ -121,6 +121,7 @@ jobs:
       TEMP: C:\\Users\\runneradmin\\Temp
       TMP: C:\\Users\\runneradmin\\Temp
       PYTHONUNBUFFERED: '1'
+      USE_BAZEL_VERSION: '5.1.1'
 
     steps:
     - name: Show user home
