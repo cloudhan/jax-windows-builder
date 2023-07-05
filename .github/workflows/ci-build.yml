@@ -176,7 +176,7 @@ jobs:
     - name: py311 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
-        ../build-jaxlib.ps1 cuda -bazel_path $env:BAZEL_PATH -cuda_version '${{ matrix.cuda-version }}' -cuda_prefix 'D:/CUDA'
+        ../build-jaxlib.ps1 cuda -bazel_path $env:BAZEL_PATH -cuda_version '${{ matrix.cuda-version }}' -cuda_prefix 'D:/CUDA' -symlink_python
         az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
@@ -192,7 +192,7 @@ jobs:
     - name: py310 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
-        ../build-jaxlib.ps1 cuda -bazel_path $env:BAZEL_PATH -cuda_version '${{ matrix.cuda-version }}' -cuda_prefix 'D:/CUDA'
+        ../build-jaxlib.ps1 cuda -bazel_path $env:BAZEL_PATH -cuda_version '${{ matrix.cuda-version }}' -cuda_prefix 'D:/CUDA' -symlink_python
         az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
@@ -208,7 +208,7 @@ jobs:
     - name: py39 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
-        ../build-jaxlib.ps1 cuda -bazel_path $env:BAZEL_PATH -cuda_version '${{ matrix.cuda-version }}' -cuda_prefix 'D:/CUDA'
+        ../build-jaxlib.ps1 cuda -bazel_path $env:BAZEL_PATH -cuda_version '${{ matrix.cuda-version }}' -cuda_prefix 'D:/CUDA' -symlink_python
         az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 
@@ -224,7 +224,7 @@ jobs:
     - name: py38 build whl and upload
       run: |
         cd "$env:GITHUB_WORKSPACE/jax"
-        ../build-jaxlib.ps1 cuda -bazel_path $env:BAZEL_PATH -cuda_version '${{ matrix.cuda-version }}' -cuda_prefix 'D:/CUDA'
+        ../build-jaxlib.ps1 cuda -bazel_path $env:BAZEL_PATH -cuda_version '${{ matrix.cuda-version }}' -cuda_prefix 'D:/CUDA' -symlink_python
         az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
         rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
 

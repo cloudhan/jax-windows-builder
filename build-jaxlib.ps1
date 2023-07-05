@@ -33,7 +33,10 @@ param(
     [String]$xla_submodule = (Join-Path $PSScriptRoot xla),
 
     [Parameter(Mandatory = $false)]
-    [String]$triton_submodule = (Join-Path $PSScriptRoot triton)
+    [String]$triton_submodule = (Join-Path $PSScriptRoot triton),
+
+    # For CI to avoid full rebuild when changing python version
+    [switch]$symlink_python
 )
 
 . (Join-Path (Split-Path $MyInvocation.MyCommand.Path) functions.ps1)
@@ -124,14 +127,31 @@ try {
         echo ('build:windows --override_repository=triton=' + $triton_submodule.Replace("\", "/")) >> .bazelrc.user
     }
 
+    $python_bin_path = ""
+    if ($symlink_python) {
+        $python_symlined_home = Join-Path $PSScriptRoot python_symlinked
+        Remove-Item $python_symlined_home -Force -ErrorAction 0
+        New-Item -Type SymbolicLink $python_symlined_home -Target (Split-Path (Get-Command python).Source) -Force
+        $new_path.Insert(0, $python_symlined_home)
+
+        $python_bin_path = Join-Path $python_symlined_home python.exe
+
+        # We use it to trigger the repository rule when python is changed
+        $python_lib_path = (Get-Item $python_symlined_home).Target.Replace("\", "/")
+        Write-Host -ForegroundColor Yellow "Use PYTHON_LIB_PATH " $python_lib_path
+        echo ('build:windows --repo_env PYTHON_LIB_PATH="' + $python_lib_path + '"') >> .bazelrc.user
+    }
+
     # NOTE: In case it is needed to debug a build failure, run `bazel --output_user_root=$bazel_output_root <you cmds>`
     if ($build_type -eq 'cpu') {
         python .\build\build.py `
+            --python_bin_path="$python_bin_path" `
             --noenable_cuda `
             --bazel_path="$bazel_path" `
             --bazel_startup_options="--output_user_root=$bazel_output_root"
     } elseif ($build_type -eq 'cuda') {
         python .\build\build.py `
+            --python_bin_path="$python_bin_path" `
             --enable_cuda `
             --cuda_version="$cuda_version" `
             --cuda_path="$cuda_path" `
