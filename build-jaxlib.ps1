@@ -23,7 +23,17 @@ param(
     [String]$bazel_output_root = "C:/bazel_output_root",
 
     [Parameter(Mandatory = $false)]
-    [String]$bazel_vc_full_version = ""
+    [ValidateSet("2022", "2019")]
+    [String]$vs_version = "",
+
+    [Parameter(Mandatory = $false)]
+    [String]$bazel_vc_full_version = "",
+
+    [Parameter(Mandatory = $false)]
+    [String]$xla_submodule = (Join-Path $PSScriptRoot xla),
+
+    [Parameter(Mandatory = $false)]
+    [String]$triton_submodule = (Join-Path $PSScriptRoot triton)
 )
 
 . (Join-Path (Split-Path $MyInvocation.MyCommand.Path) functions.ps1)
@@ -47,7 +57,17 @@ $cudnn_version = [System.Version]$cudnn_version
 $cuda_path = "$cuda_prefix/v$cuda_version"
 $cudnn_path = $cuda_path
 
+if ($xla_submodule -ne (Join-Path $PSScriptRoot xla)) {
+    $xla_submodule = Resolve-Path $xla_submodule
+}
+
+if ($triton_submodule -ne (Join-Path $PSScriptRoot triton)) {
+    $triton_submodule = Resolve-Path $triton_submodule
+}
+
 [System.Collections.ArrayList]$new_path = `
+    'C:\tools', `
+    'C:\Program Files\Git\cmd', `
     'C:\Windows\System32', `
     'C:\Windows', `
     'C:\Windows\System32\Wbem', `
@@ -65,8 +85,6 @@ try {
     }
 
     # insert your path here
-    $new_path.Insert(0, 'C:\Program Files\Git\cmd')
-    $new_path.Insert(0, 'C:\tools')
     $new_path.Insert(0, "$msys2_path")
 
     # bring github actions python into path
@@ -77,7 +95,9 @@ try {
 
     $env:PATH = $new_path -join ";"
 
-    Set-VSEnv
+    if ($vs_version -ne "") {
+        Set-VSEnv $vs_version
+    }
     if ($bazel_vc_full_version -ne "") {
         $env:BAZEL_VC_FULL_VERSION = $bazel_vc_full_version
     }
@@ -94,13 +114,11 @@ try {
         echo "build --jobs=${bazel_jobs}" >> .bazelrc.user
     }
 
-    $xla_submodule = Join-Path $PSScriptRoot xla
     if (Test-Path $xla_submodule) {
         Write-Host -ForegroundColor Yellow "Use xla submodule " $xla_submodule
         echo ('build:windows --override_repository=xla=' + $xla_submodule.Replace("\", "/")) >> .bazelrc.user
     }
 
-    $triton_submodule = Join-Path $PSScriptRoot triton
     if (Test-Path $triton_submodule) {
         Write-Host -ForegroundColor Yellow "Use triton submodule " $triton_submodule
         echo ('build:windows --override_repository=triton=' + $triton_submodule.Replace("\", "/")) >> .bazelrc.user
