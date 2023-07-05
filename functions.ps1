@@ -19,7 +19,7 @@ function Set-VSEnv {
     param (
         [parameter(Mandatory = $false)]
         [ValidateSet(2022, 2019, 2017)]
-        [int]$Version = 2019,
+        [int]$Version = 2022,
 
         [parameter(Mandatory = $false)]
         [ValidateSet("all", "x86", "x64")]

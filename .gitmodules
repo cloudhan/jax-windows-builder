@@ -1,3 +1,6 @@
 [submodule "jax"]
 	path = jax
 	url = https://github.com/google/jax.git
+[submodule "triton"]
+	path = triton
+	url = https://github.com/cloudhan/triton.git
