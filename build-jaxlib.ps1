@@ -54,9 +54,6 @@ switch ($cuda_version) {
     }
 }
 
-$cuda_version = [System.Version]$cuda_version
-$cudnn_version = [System.Version]$cudnn_version
-
 $cuda_path = "$cuda_prefix/v$cuda_version"
 $cudnn_path = $cuda_path
 
@@ -174,13 +171,17 @@ try {
     if ($build_type -eq 'cpu') {
         mkdir "bazel-dist/cpu" -ErrorAction 0
         mv -Force "dist/$name" "bazel-dist/cpu/$name"
+        Write-Host -ForegroundColor Yellow "Moved dist/$name to bazel-dist/cpu/$name"
     } elseif ($build_type -eq 'cuda') {
-        $cuda_dir = "cuda$($cuda_version.Major)$($cuda_version.Minor)"
-        $cuda_cudnn_tag = "cuda$($cuda_version.Major).cudnn$($cudnn_version.Major)$($cudnn_version.Minor)"
+        $cuda_ver = [System.Version]$cuda_version
+        $cudnn_ver = [System.Version]$cudnn_version
+        $cuda_dir = "cuda$($cuda_ver.Major)$($cuda_ver.Minor)"
+        $cuda_cudnn_tag = "cuda$($cuda_ver.Major).cudnn$($cudnn_ver.Major)$($cudnn_ver.Minor)"
         $new_name = $name.Insert($name.IndexOf("-", $name.IndexOf("-") + 1), "+$cuda_cudnn_tag")
 
         mkdir "bazel-dist/$cuda_dir" -ErrorAction 0
         mv -Force "dist/$name" "bazel-dist/$cuda_dir/$new_name"
+        Write-Host -ForegroundColor Yellow "Move dist/$name to bazel-dist/$cuda_dir/$new_name"
     }
 }
 finally {
