@@ -114,14 +114,13 @@ jobs:
     strategy:
       matrix:
         cuda-version: ["11.8", "12.1"]
-    runs-on: windows-2019
+    runs-on: windows-2022
     env:
       AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
       BAZEL_PATH: "D:\\bazel.exe"
       TEMP: C:\\Users\\runneradmin\\Temp
       TMP: C:\\Users\\runneradmin\\Temp
       PYTHONUNBUFFERED: '1'
-      USE_BAZEL_VERSION: '5.1.1'
 
     steps:
     - name: Show user home
