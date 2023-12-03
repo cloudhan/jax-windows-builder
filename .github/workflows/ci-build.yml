@@ -29,8 +29,10 @@ jobs:
         minimum-size: 8GB
         maximum-size: 32GB
         disk-root: "C:"
-    - name: Show disk info
-      run: Get-Volume -DriveLetter CD | Sort-Object DriveLetter
+    # - name: Show disk info
+    #   run: Get-Volume -DriveLetter CD | Sort-Object DriveLetter
+    - name: Workaround https://github.com/bazelbuild/bazel/issues/18592
+      run: rm -Recurse -Force "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\vcpkg" -ErrorAction Continue
 
     - uses: actions/checkout@v2
       with:
@@ -57,10 +59,14 @@ jobs:
       run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements.txt"
     - name: py311 build whl and upload
       run: |
+        rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist" -ErrorAction Continue
         cd "$env:GITHUB_WORKSPACE/jax"
         ../build-jaxlib.ps1 cpu -bazel_path $env:BAZEL_PATH -vs_version 2022
         az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
-        rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
+    - uses: actions/upload-artifact@v3
+      with:
+        name: whls
+        path: $env:GITHUB_WORKSPACE/jax/bazel-dist/*.whl
 
     #=============#
     # Python 3.10 #
@@ -73,10 +79,14 @@ jobs:
       run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements.txt"
     - name: py310 build whl and upload
       run: |
+        rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist" -ErrorAction Continue
         cd "$env:GITHUB_WORKSPACE/jax"
         ../build-jaxlib.ps1 cpu -bazel_path $env:BAZEL_PATH -vs_version 2022
         az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
-        rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
+    - uses: actions/upload-artifact@v3
+      with:
+        name: whls
+        path: $env:GITHUB_WORKSPACE/jax/bazel-dist/*.whl
 
     #============#
     # Python 3.9 #
@@ -89,10 +99,14 @@ jobs:
       run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements.txt"
     - name: py39 build whl and upload
       run: |
+        rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist" -ErrorAction Continue
         cd "$env:GITHUB_WORKSPACE/jax"
         ../build-jaxlib.ps1 cpu -bazel_path $env:BAZEL_PATH -vs_version 2022
         az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
-        rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
+    - uses: actions/upload-artifact@v3
+      with:
+        name: whls
+        path: $env:GITHUB_WORKSPACE/jax/bazel-dist/*.whl
 
     #============#
     # Python 3.8 #
@@ -105,10 +119,14 @@ jobs:
     #   run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements.txt"
     # - name: py38 build whl and upload
     #   run: |
+    #     rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist" -ErrorAction Continue
     #     cd "$env:GITHUB_WORKSPACE/jax"
     #     ../build-jaxlib.ps1 cpu -bazel_path $env:BAZEL_PATH -vs_version 2022
     #     az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
-    #     rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
+    # - uses: actions/upload-artifact@v3
+    #   with:
+    #     name: whls
+    #     path: $env:GITHUB_WORKSPACE/jax/bazel-dist/*.whl
 
   build-cuda:
     strategy:
@@ -139,8 +157,10 @@ jobs:
         minimum-size: 8GB
         maximum-size: 32GB
         disk-root: "C:"
-    - name: Show disk info
-      run: Get-Volume -DriveLetter CD | Sort-Object DriveLetter
+    # - name: Show disk info
+    #   run: Get-Volume -DriveLetter CD | Sort-Object DriveLetter
+    - name: Workaround https://github.com/bazelbuild/bazel/issues/18592
+      run: rm -Recurse -Force "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\vcpkg" -ErrorAction Continue
 
     - uses: actions/checkout@v2
       with:
@@ -174,10 +194,14 @@ jobs:
       run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements.txt"
     - name: py311 build whl and upload
       run: |
+        rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist" -ErrorAction Continue
         cd "$env:GITHUB_WORKSPACE/jax"
         ../build-jaxlib.ps1 cuda -bazel_path $env:BAZEL_PATH -vs_version 2022 -cuda_version '${{ matrix.cuda-version }}' -cuda_prefix 'D:/CUDA' -symlink_python
         az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
-        rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
+    - uses: actions/upload-artifact@v3
+      with:
+        name: whls
+        path: $env:GITHUB_WORKSPACE/jax/bazel-dist/*.whl
 
     #=============#
     # Python 3.10 #
@@ -190,10 +214,14 @@ jobs:
       run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements.txt"
     - name: py310 build whl and upload
       run: |
+        rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist" -ErrorAction Continue
         cd "$env:GITHUB_WORKSPACE/jax"
         ../build-jaxlib.ps1 cuda -bazel_path $env:BAZEL_PATH -vs_version 2022 -cuda_version '${{ matrix.cuda-version }}' -cuda_prefix 'D:/CUDA' -symlink_python
         az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
-        rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
+    - uses: actions/upload-artifact@v3
+      with:
+        name: whls
+        path: $env:GITHUB_WORKSPACE/jax/bazel-dist/*.whl
 
     #============#
     # Python 3.9 #
@@ -206,10 +234,14 @@ jobs:
       run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements.txt"
     - name: py39 build whl and upload
       run: |
+        rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist" -ErrorAction Continue
         cd "$env:GITHUB_WORKSPACE/jax"
         ../build-jaxlib.ps1 cuda -bazel_path $env:BAZEL_PATH -vs_version 2022 -cuda_version '${{ matrix.cuda-version }}' -cuda_prefix 'D:/CUDA' -symlink_python
         az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
-        rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
+    - uses: actions/upload-artifact@v3
+      with:
+        name: whls
+        path: $env:GITHUB_WORKSPACE/jax/bazel-dist/*.whl
 
     #============#
     # Python 3.8 #
@@ -222,17 +254,21 @@ jobs:
     #   run: pip install -r "$env:GITHUB_WORKSPACE/build-requirements.txt"
     # - name: py38 build whl and upload
     #   run: |
+    #     rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist" -ErrorAction Continue
     #     cd "$env:GITHUB_WORKSPACE/jax"
     #     ../build-jaxlib.ps1 cuda -bazel_path $env:BAZEL_PATH -vs_version 2022 -cuda_version '${{ matrix.cuda-version }}' -cuda_prefix 'D:/CUDA' -symlink_python
     #     az storage blob upload-batch --overwrite -d unstable -s "$env:GITHUB_WORKSPACE/jax/bazel-dist" --pattern '*.whl'
-    #     rm -Recurse -Force "$env:GITHUB_WORKSPACE/jax/bazel-dist"
+    # - uses: actions/upload-artifact@v3
+    #   with:
+    #     name: whls
+    #     path: $env:GITHUB_WORKSPACE/jax/bazel-dist/*.whl
 
   update-index:
     if: ${{ ! cancelled() }}
     needs:
       - build-cpu
       - build-cuda
-    runs-on: windows-2019
+    runs-on: windows-2022
     env:
       AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
     steps:
