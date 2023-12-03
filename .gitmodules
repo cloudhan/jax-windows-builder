@@ -1,6 +1,6 @@
 [submodule "jax"]
 	path = jax
-	url = https://github.com/google/jax.git
+	url = https://github.com/cloudhan/jax.git
 [submodule "xla"]
 	path = xla
 	url = https://github.com/cloudhan/xla.git
