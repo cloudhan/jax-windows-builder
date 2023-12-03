@@ -16,6 +16,8 @@ You can either install `jax` via pip (CPU only or CUDA), install `jax` from sour
 
 ## Install CPU only version via `pip`
 
+**Starting from 0.4.13, CPU build was removed. Please use official CPU build from PyPI directly.
+
 ```
 pip install "jax[cpu]===0.3.14" -f https://whls.blob.core.windows.net/unstable/index.html --use-deprecated legacy-resolver
 ```
