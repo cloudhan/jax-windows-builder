@@ -126,15 +126,15 @@ try {
 
     $python_bin_path = ""
     if ($symlink_python) {
-        $python_symlined_home = Join-Path $PSScriptRoot python_symlinked
-        Remove-Item $python_symlined_home -Force -ErrorAction 0
-        New-Item -Type SymbolicLink $python_symlined_home -Target (Split-Path (Get-Command python).Source) -Force
-        $new_path.Insert(0, $python_symlined_home)
+        $python_symlinked_home = Join-Path $PSScriptRoot python_symlinked
+        Remove-Item $python_symlinked_home -Force -ErrorAction 0
+        New-Item -Type SymbolicLink $python_symlinked_home -Target (Split-Path (Get-Command python).Source) -Force
+        $new_path.Insert(0, $python_symlinked_home)
 
-        $python_bin_path = Join-Path $python_symlined_home python.exe
+        $python_bin_path = Join-Path $python_symlinked_home python.exe
 
         # We use it to trigger the repository rule when python is changed
-        $python_lib_path = (Get-Item $python_symlined_home).Target.Replace("\", "/")
+        $python_lib_path = (Get-Item $python_symlinked_home).Target.Replace("\", "/")
         Write-Host -ForegroundColor Yellow "Use PYTHON_LIB_PATH " $python_lib_path
         echo ('build:windows --repo_env PYTHON_LIB_PATH="' + $python_lib_path + '"') >> .bazelrc.user
     }
