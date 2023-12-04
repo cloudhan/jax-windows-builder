@@ -81,7 +81,7 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: whls
-        path: $env:GITHUB_WORKSPACE/jax/bazel-dist/
+        path: jax/bazel-dist/**/*.whl
 
     #=============#
     # Python 3.10 #
@@ -101,7 +101,7 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: whls
-        path: $env:GITHUB_WORKSPACE/jax/bazel-dist/
+        path: jax/bazel-dist/**/*.whl
 
     #============#
     # Python 3.9 #
@@ -121,7 +121,7 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: whls
-        path: $env:GITHUB_WORKSPACE/jax/bazel-dist/
+        path: jax/bazel-dist/**/*.whl
 
   update-index:
     if: ${{ ! cancelled() }}
